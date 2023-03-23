@@ -3,24 +3,49 @@ import bodyParser from 'body-parser';
 
 export const propertyRoutes = express.Router();
 
+import {
+  searchProperties,
+  getProperty,
+  insertProperty,
+  updateProperty,
+  deleteProperty,
+} from '../controllers/properties';
+import buildValidationMiddleware from '../middlewares/validation';
+import {
+  searchQuerySchema,
+  requestBodySchema,
+  pathParamsSchema,
+} from '../validations/properties';
+
 propertyRoutes.use(bodyParser.json());
 
-propertyRoutes.get('/', async (req, res) => {
-  res.send('GET all properties');
-});
+propertyRoutes.get(
+  '/',
+  buildValidationMiddleware('query', searchQuerySchema),
+  searchProperties,
+);
 
-propertyRoutes.get('/:id', async (req, res) => {
-  res.send('GET property by id');
-});
+propertyRoutes.get(
+  '/:id',
+  buildValidationMiddleware('params', pathParamsSchema),
+  getProperty,
+);
 
-propertyRoutes.post('/', async (req, res) => {
-  res.send('Create property');
-});
+propertyRoutes.post(
+  '/',
+  buildValidationMiddleware('body', requestBodySchema),
+  insertProperty,
+);
 
-propertyRoutes.put('/', async (req, res) => {
-  res.send('Update property');
-});
+propertyRoutes.put(
+  '/:id',
+  buildValidationMiddleware('params', pathParamsSchema),
+  buildValidationMiddleware('body', requestBodySchema),
+  updateProperty,
+);
 
-propertyRoutes.delete('/', async (req, res) => {
-  res.send('Delete property');
-});
+propertyRoutes.delete(
+  '/:id',
+  buildValidationMiddleware('params', pathParamsSchema),
+  deleteProperty,
+);
