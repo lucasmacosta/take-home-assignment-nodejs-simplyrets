@@ -12,6 +12,14 @@ export const searchQuerySchema = Joi.object<SearchQuery>({
     .min(pagination.minPageSize)
     .max(pagination.maxPageSize)
     .default(pagination.defaultPageSize),
+  address: Joi.string(),
+  minPrice: Joi.number().min(0),
+  maxPrice: Joi.number(),
+  minBedrooms: Joi.number().integer().min(0),
+  maxBedrooms: Joi.number().integer(),
+  minBathrooms: Joi.number().integer().min(0),
+  maxBathrooms: Joi.number().integer(),
+  type: Joi.array().single(),
 });
 
 export const requestBodySchema = Joi.object<RequestBody>({

@@ -10,10 +10,63 @@ export class PropertyService {
   constructor(private propertyRepository: Repository<Property>) {}
 
   async get(params: SearchQuery) {
-    const { page, pageSize } = params;
+    const {
+      page,
+      pageSize,
+      address,
+      minPrice,
+      maxPrice,
+      minBedrooms,
+      maxBedrooms,
+      minBathrooms,
+      maxBathrooms,
+      type,
+    } = params;
     const offset = (page - 1) * pageSize;
 
-    const queryBuilder = this.propertyRepository.createQueryBuilder();
+    const queryBuilder = this.propertyRepository.createQueryBuilder('property');
+
+    if (address) {
+      queryBuilder.andWhere('property.address LIKE :address', {
+        address: `%${address}%`,
+      });
+    }
+
+    if (minPrice) {
+      queryBuilder.andWhere('property.price >= :minPrice', { minPrice });
+    }
+
+    if (maxPrice) {
+      queryBuilder.andWhere('property.price <= :maxPrice', { maxPrice });
+    }
+
+    if (minBedrooms) {
+      queryBuilder.andWhere('property.bedrooms >= :minBedrooms', {
+        minBedrooms,
+      });
+    }
+
+    if (maxBedrooms) {
+      queryBuilder.andWhere('property.bedrooms <= :maxBedrooms', {
+        maxBedrooms,
+      });
+    }
+
+    if (minBathrooms) {
+      queryBuilder.andWhere('property.bathrooms >= :minBathrooms', {
+        minBathrooms,
+      });
+    }
+
+    if (maxBathrooms) {
+      queryBuilder.andWhere('property.bathrooms <= :maxBathrooms', {
+        maxBathrooms,
+      });
+    }
+
+    if (type) {
+      queryBuilder.andWhere('property.type IN (:...type)', { type });
+    }
 
     const [count, items] = await Promise.all([
       queryBuilder.getCount(),
